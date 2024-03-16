@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 def main():
-    st.title("Dynamic Table Creation")
+    st.title("Time Table Scheduler")
     
     semesters = ['Sem I', 'Sem II', 'Sem III', 'Sem IV', 'Sem V', 'Sem VI', 'Sem VII', 'Sem VIII']
     selected_semester = st.selectbox("Select a semester:", semesters)
