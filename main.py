@@ -3,24 +3,30 @@ import pandas as pd
 
 def main():
     st.title("Dynamic Table Creation")
+    
+    semesters = ['Sem I', 'Sem II', 'Sem III', 'Sem IV', 'Sem V', 'Sem VI', 'Sem VII', 'Sem VIII']
+    selected_semester = st.selectbox("Select a semester:", semesters)
+    num_teachers = {}
+    if selected_semester == 'Sem VI':
+        with st.expander("Enter number of teachers for each subject"):
+            num_teachers = {}
+            for subject in ['UE21CS341B Compiler Design', 'UE21CS351B Cloud Computing',
+                            'UE21CS352B Object Oriented Analysis & Design using Java',
+                            'Elective A', 'Elective B']:
+                num_teachers[subject] = st.number_input(f"Enter the number of teachers for {subject}:",
+                                                        min_value=0, value=1)
+            st.write("Number of teachers for each subject:")
+            st.write(num_teachers)
+    num_sections = st.number_input("Enter the number of sections:", min_value=1, value=3)
+    days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+    classes = ['Period 1', 'Period 2', 'Period 3', 'Period 4', 'Period 5', 'Period 6', 'Period 7', 'Period 8', 'Period 9']
 
-    # Collect user input for table creation
-    num_rows = st.number_input("Enter the number of rows:", min_value=1, value=5)
-    num_columns = st.number_input("Enter the number of columns:", min_value=1, value=3)
+    for section_num in range(num_sections):
+        st.subheader(f"{selected_semester} - Section {chr(section_num + 65)}")
+        df = pd.DataFrame(index=days_of_week, columns=classes) 
 
-    # Create an empty DataFrame to store user data
-    data = []
-    for i in range(num_rows):
-        row = []
-        for j in range(num_columns):
-            row.append(st.text_input(f"Row {i+1}, Column {j+1}"))
-        data.append(row)
-
-    # Convert the data list into a DataFrame
-    df = pd.DataFrame(data, columns=[f"Column {j+1}" for j in range(num_columns)])
-
-    # Display the DataFrame as a table
-    st.write(df)
+        st.write(df, use_container_width=True) 
+        st.write('---')  
 
 if __name__ == "__main__":
     main()
