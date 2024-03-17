@@ -1,0 +1,18 @@
+{
+  "Sem I": ["Subject 1", "Subject 2"],
+  "Sem II": ["Subject 3", "Subject 4", "Subject 14"],
+  "Sem III": ["Subject 5", "Subject 6"],
+  "Sem IV": ["Subject 7", "Subject 8"],
+  "Sem V": ["Subject 9", "Subject 10"],
+  "Sem VI": [
+    "UE21CS341B Compiler Design",
+    "UE21CS351B Cloud Computing",
+    "UE21CS352B Object Oriented Analysis & Design using Java",
+    "Elective A",
+    "Elective B",
+    "Cloud Computing Lab",
+    "Object Oriented Analysis & Design using Java Lab"
+  ],
+  "Sem VII": [],
+  "Sem VIII": []
+}
