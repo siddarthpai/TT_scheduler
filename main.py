@@ -44,6 +44,7 @@ def main():
 
     collapsed_function = WFCtimeTable.main(num_class=num_classes, num_teach=num_teachers, num_secs=num_sections)
     if collapsed_function is None:
+        st.warning('IMPOSSIBLE STATE REACHED. Please check constraints', icon="⚠️")
         return
     
     collapsed_function = np.array(list(map(lambda x: f"{x.cls}", collapsed_function))).reshape([num_sections,5,9])

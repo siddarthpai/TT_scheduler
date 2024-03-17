@@ -149,7 +149,6 @@ def print_tt_stats(tt):
 
 def collapse_slot(slot, tt):
     min_cls = get_min_cls(slot['state'])
-    print(min_cls)
     slot['state']: CollapsedState = CollapsedState(min_cls, ofst(slot['ndx'][2]))
     tt[get_ndx(slot['ndx'])] = slot['state']
     propagate_constraints(slot, tt)
@@ -202,11 +201,9 @@ def propagate_constraints(slot, tt:list[State]):
 
 
 def init(n_c, n_t, n_s):
-
     global subjects, teachers, n_sections
 
     n_sections = n_s
-
     sum_classes = sum(n_c.values())
     
     n_c["-"] = n_subjects_per_day*n_days_per_week - sum_classes
