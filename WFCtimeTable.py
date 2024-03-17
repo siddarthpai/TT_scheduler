@@ -1,116 +1,6 @@
-# import numpy as np
-#
-# n_sections = 3
-# n_days_per_week = 5
-# n_subjects_per_day = 9
-# subjects: dict[str, int] = {"CC": 6, "CD": 6, "OOAD": 6, "CC_LAB": 2, "OOAD_LAB": 2,
-#                             "F": 500, "G": 500, "H": 500, "I": 500, "J": 500, "K": 500}
-# total_subjects = sum(subjects.values())
-# timetable = np.zeros((n_sections, n_days_per_week, n_subjects_per_day), dtype='U10')
-#
-# # Initialize constraints for each cell
-# cell_constraints = {
-#     f'{sec}_{day}_{hour}':
-#         list(subjects.keys())
-#     for sec in range(n_sections) for day in range(n_days_per_week) for hour in range(n_subjects_per_day)
-# }
-#
-#
-# # Define function to update constraints after placing a class
-# def update_constraints(section, day, hour, cls):
-#     # Update constraints for the same section
-#     for h in range(n_subjects_per_day):
-#         key = f'{section}_{day}_{h}'
-#         if key in cell_constraints and cls in cell_constraints[key]:
-#             cell_constraints[key].remove(cls)
-#
-#     # Update constraints for the same day
-#     for s in range(n_sections):
-#         key = f'{s}_{day}_{hour}'
-#         if key in cell_constraints and cls in cell_constraints[key]:
-#             cell_constraints[key].remove(cls)
-#
-#     # Update constraints for the same hour
-#     for s in range(n_sections):
-#         for d in range(n_days_per_week):
-#             key = f'{s}_{d}_{hour}'
-#             if key in cell_constraints and cls in cell_constraints[key]:
-#                 cell_constraints[key].remove(cls)
-#
-#
-# # Define function for wave function collapse
-# def wave_function_collapse():
-#     while len(cell_constraints) > 0:
-#         # Choose cell with minimum entropy
-#         min_entropy = float('inf')
-#         min_cell = None
-#         for cell, constraints in cell_constraints.items():
-#             entropy = len(constraints)
-#             if entropy < min_entropy:
-#                 min_entropy = entropy
-#                 min_cell = cell
-#
-#         # Choose a class randomly from remaining options
-#         if len(cell_constraints[min_cell]) > 0:
-#             selected_class = np.random.choice(cell_constraints[min_cell])
-#             # print(selected_class, "+++")
-#         else:
-#             print("No valid classes to assign. Exiting...")
-#             return
-#
-#         # Get section, day, and hour from the cell name
-#         section, day, hour = map(int, min_cell.split('_'))
-#
-#         # Assign the class to the timetable
-#         timetable[section, day, hour] = selected_class
-#         print(timetable[section, day, hour], selected_class, "----")
-#         # Update constraints
-#         update_constraints(section, day, hour, selected_class)
-#
-#         # Remove cell from constraints
-#         del cell_constraints[min_cell]
-#
-#
-# # Generate timetable
-# wave_function_collapse()
-# print(timetable)
-# # Print timetable
-# for sec in range(n_sections):
-#     print(f"Section {sec + 1}:")
-#     for day in range(n_days_per_week):
-#         print(f"Day {day + 1}:", end=" ")
-#         for hour in range(n_subjects_per_day):
-#             print(f"{timetable[sec, day, hour]}", end=" ")
-#         print()
-#     # print()
-from typing import Iterable
-
-# blocked = [
-#     [
-#         [0, 0, 0, 1, 1, 1, 0, 0, 0],
-#         [0, 0, 0, 1, 1, 1, 0, 0, 0],
-#         [1, 1, 1, 0, 0, 0, 0, 0, 0],
-#         [1, 1, 1, 0, 0, 0, 0, 0, 0],
-#         [0, 0, 0, 0, 0, 0, 0, 0, 0]
-#     ],
-#     [
-#         [0, 0, 0, 1, 1, 1, 0, 0, 0],
-#         [0, 0, 0, 1, 1, 1, 0, 0, 0],
-#         [1, 1, 1, 0, 0, 0, 0, 0, 0],
-#         [1, 1, 1, 0, 0, 0, 0, 0, 0],
-#         [0, 0, 0, 0, 0, 0, 0, 0, 0]
-#     ],
-#     [
-#         [0, 0, 0, 1, 1, 1, 0, 0, 0],
-#         [0, 0, 0, 1, 1, 1, 0, 0, 0],
-#         [1, 1, 1, 0, 0, 0, 0, 0, 0],
-#         [1, 1, 1, 0, 0, 0, 0, 0, 0],
-#         [0, 0, 0, 0, 0, 0, 0, 0, 0]
-#     ]
-# ]
-
 import numpy as np
 import colorama
+from typing import Iterable
 
 n_sections = 3
 n_days_per_week = 5
@@ -311,7 +201,21 @@ def propagate_constraints(slot, tt:list[State]):
                 state.clalc_entropy()
 
 
-def main():
+def init(n_c, n_t, n_s):
+
+    global subjects, teachers, n_sections
+
+    n_sections = n_s
+
+    sum_classes = sum(n_c.values())
+    
+    n_c["-"] = n_subjects_per_day*n_days_per_week - sum_classes
+    n_t["-"] = n_sections
+
+    subjects = n_c
+    teachers = n_t
+
+def main(num_class, num_teach, num_secs):
     elective1 = [
         [0, 0, 0, 1, 1, 1, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -327,37 +231,33 @@ def main():
         [0, 0, 0, 0, 0, 0, 0, 0, 0],
     ]
 
-    # listed_states.append(
-    #     SuperState(subjects.keys(), 0)
-    # )
+    if ((not num_class) or (not num_teach) or (not num_secs)):
+        return None
+    
+    init(num_class, num_teach, num_secs)
+
     timetable: list[State] = [
-        CollapsedState('elec-1', ofst(k)) if elective1[j][k] else ( CollapsedState('elec-2', ofst(k)) if elective2[j][k] else SuperState((key for key in subjects.keys() if key not in ('elec-1','elec-2')), ofst(k)) )# listed_states[0]
+        CollapsedState('Elective A', ofst(k)) if elective1[j][k] else ( CollapsedState('Elective B', ofst(k)) if elective2[j][k] else SuperState((key for key in subjects.keys() if key not in ('Elective A','Elective B')), ofst(k)) )# listed_states[0]
         for i in range(n_sections)
         for j in range(n_days_per_week)
         for k in range(n_subjects_per_day)
     ]
 
     collapseable_slot = {'state': timetable[0], 'ndx': (0, 0, 0)}
-    print(listed_states)
-
-    # print_tt(timetable)
-    # collapseable_slot = collapse_slot(collapseable_slot, timetable)
-    # print_tt(timetable)
-    # print(collapseable_slot, end=f"\n{'*'*100}1\n")
 
     i=0
     while True:
         if collapseable_slot is None:
             print("The Wave Function has Collapsed")
-            print_tt_stats(timetable)
-            return
+            # print_tt_stats(timetable)
+            return timetable
         if len(collapseable_slot['state'].classes) == 0:
             print("IMPOSSIBLE STATE REACHED")
-            print_tt_stats(timetable)
-            return
+            # print_tt_stats(timetable)
+            return None
         collapseable_slot = collapse_slot(collapseable_slot, timetable)
-        print_tt(timetable)
-        print(collapseable_slot, end=f"\n{'*' * 100}{i}\n")
+        # print_tt(timetable)
+        # print(collapseable_slot, end=f"\n{'*' * 100}{i}\n")
         # if input("Enter:"):
         #     break
 
